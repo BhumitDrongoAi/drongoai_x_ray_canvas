@@ -3,7 +3,7 @@ import 'dart:ui';
 abstract class ImageCanvas {}
 
 abstract class Shape {
-  void draw(Canvas canvas, Size size);
+  void draw(Canvas canvas, Size size, Paint paint);
 
   ///start position
   Offset startPosition = Offset.zero;
@@ -31,6 +31,12 @@ abstract class Shape {
 
   /// scale factor
   double scaleFactor = 1.0;
+
+  ///xFlip
+  bool xFlip = false;
+
+  ///yFlip
+  bool yFlip = false;
 }
 
 class Handle {

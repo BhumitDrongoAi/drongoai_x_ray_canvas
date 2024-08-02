@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:ui' as ui;
 
+import 'package:drongoai_x_ray_canvas/src/enum/shape_enum.dart';
 import 'package:drongoai_x_ray_canvas/src/shapes/shape.dart';
 import 'package:drongoai_x_ray_canvas/src/x_ray_abstract.dart';
 import 'package:flutter/material.dart';
@@ -61,6 +62,30 @@ class CanvasController extends ChangeNotifier {
     notifyListeners();
   }
 
+  ///xFlip
+  bool _xFlip = false;
+
+  /// Get the xFlip
+  bool get xFlip => _xFlip;
+
+  /// Set the xFlip
+  set xFlip(bool value) {
+    _xFlip = value;
+    notifyListeners();
+  }
+
+  ///yFlip
+  bool _yFlip = false;
+
+  /// Get the yFlip
+  bool get yFlip => _yFlip;
+
+  /// Set the yFlip
+  set yFlip(bool value) {
+    _yFlip = value;
+    notifyListeners();
+  }
+
   ///container size
   Size _containerSize = Size.zero;
 
@@ -87,6 +112,17 @@ class CanvasController extends ChangeNotifier {
   /// Set the scale factor
   set scaleFactor(double value) {
     _scaleFactor = value;
+    notifyListeners();
+  }
+
+  ///restore canvas
+  void restoreCanvas() {
+    fitImageToViewPort();
+    _shapes.clear();
+    _selectedShape = ActiveShape.none;
+    xFlip = false;
+    yFlip = false;
+    rotation = 0.0;
     notifyListeners();
   }
 
@@ -170,12 +206,33 @@ class CanvasController extends ChangeNotifier {
   }
 
   ///----------------------------------------annotations---------------------------------------------
+
+  Color _paintColor = Colors.red;
+
+  Color get paintColor => _paintColor;
+
+  set paintColor(Color value) {
+    _paintColor = value;
+    notifyListeners();
+  }
+
   List<Shape> _shapes = [];
 
   List<Shape> get shapes => _shapes;
 
   set shapes(List<Shape> value) {
     _shapes = value;
+    notifyListeners();
+  }
+
+  ActiveShape _selectedShape = ActiveShape.none;
+
+  /// Get the selected shape
+  ActiveShape get selectedShape => _selectedShape;
+
+  /// Set the selected shape
+  set selectedShape(ActiveShape value) {
+    _selectedShape = _selectedShape == value ? ActiveShape.none : value;
     notifyListeners();
   }
 
@@ -186,21 +243,51 @@ class CanvasController extends ChangeNotifier {
   }
 
   ///tapDown
-  void onTapDown(Offset position) {
-    print('tapDown===> $position');
-
-    addShape(Line()
-      ..startPosition = position
-      ..endPosition = position
-      ..rotation = rotation
-      ..scaleFactor = scaleFactor);
-  }
+  void onTapDown(Offset position) {}
 
   ///panUpdate
   void onPanUpdate(DragUpdateDetails details) {
-    final shape = _shapes.last;
+    if (selectedShape != ActiveShape.none) {
+      _shapes.last.endPosition = details.localPosition;
 
-    shape.endPosition = details.localPosition;
-    notifyListeners();
+      notifyListeners();
+    }
+  }
+
+  /// panStart
+  void onPanStart(DragStartDetails details) {
+    if (selectedShape != ActiveShape.none) {
+      final shape = getShape(activeShape: selectedShape);
+
+      if (shape != null) {
+        addShape(
+          shape
+            ..startPosition = details.localPosition
+            ..endPosition = details.localPosition
+            ..rotation = rotation
+            ..xFlip = xFlip
+            ..yFlip = yFlip
+            ..scaleFactor = scaleFactor,
+        );
+      }
+    }
+  }
+
+  /// Get the shape from the active shape
+  Shape? getShape({ActiveShape? activeShape}) {
+    switch (activeShape ?? selectedShape) {
+      case ActiveShape.none:
+        return null;
+      case ActiveShape.line:
+        return Line();
+      case ActiveShape.rectangle:
+        return Rectangle();
+      case ActiveShape.circle:
+        throw UnimplementedError();
+      case ActiveShape.ellipse:
+        throw UnimplementedError();
+      case ActiveShape.angle:
+        throw UnimplementedError();
+    }
   }
 }

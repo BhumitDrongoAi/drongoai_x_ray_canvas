@@ -62,7 +62,10 @@ class _ImageViewerState extends State<ImageViewer> {
                     controller.onPanUpdate(details);
                   },
                   onTapDown: (details) {
-                    controller.onTapDown(details.localPosition);
+                    // controller.onTapDown(details.localPosition);
+                  },
+                  onPanStart: (details) {
+                    controller.onPanStart(details);
                   },
                   child: CustomPaint(
                     // size: Size(controller.image.width.toDouble(),

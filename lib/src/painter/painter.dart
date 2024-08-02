@@ -36,6 +36,7 @@ class CanvasPainter extends CustomPainter {
 
       /// Rotate the canvas by the specified angle
       ..rotate(canvasController.rotation * pi / 180)
+      ..scale(canvasController.xFlip ? -1 : 1, canvasController.yFlip ? -1 : 1)
 
       /// Translate the canvas back to the original position
       ..translate(-cx, -cy)
@@ -53,7 +54,7 @@ class CanvasPainter extends CustomPainter {
     for (final shape in canvasController.shapes) {
       ///rotation for the shape
 
-      shape.draw(canvas, size);
+      shape.draw(canvas, size, Paint()..color = canvasController.paintColor);
     }
   }
 
