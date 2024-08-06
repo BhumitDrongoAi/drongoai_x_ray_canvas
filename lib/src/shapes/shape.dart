@@ -6,18 +6,9 @@ import 'package:flutter/material.dart';
 
 class Line extends Shape {
   @override
-  void draw(
-    Canvas canvas,
-    Size size,
-    Paint paint,
-  ) {
+  void draw(Canvas canvas, Size size, Paint paint, double currentRotation) {
     final cx = size.width / 2;
     final cy = size.height / 2;
-
-    final start = transformToOriginalCoordinateSystem(
-        startPosition, rotation, xFlip, yFlip, size);
-    final end = transformToOriginalCoordinateSystem(
-        endPosition, rotation, xFlip, yFlip, size);
     canvas
       ..save()
 
@@ -25,12 +16,12 @@ class Line extends Shape {
       ..translate(cx, cy)
 
       /// Rotate the canvas by the specified angle
-
+      // ..rotate(0 * pi / 180)
       // ..scale(1 / scaleFactor)
 
       /// Translate the canvas back to the original position
       ..translate(-cx, -cy)
-      ..drawLine(start, end, paint)
+      ..drawLine(startPosition, endPosition, paint)
       ..restore();
   }
 
@@ -55,13 +46,9 @@ class Line extends Shape {
 
 class Rectangle extends Shape {
   @override
-  void draw(Canvas canvas, Size size, Paint paint) {
-    final start = transformToOriginalCoordinateSystem(
-        startPosition, rotation, xFlip, yFlip, size);
-    final end = transformToOriginalCoordinateSystem(
-        endPosition, rotation, xFlip, yFlip, size);
+  void draw(Canvas canvas, Size size, Paint paint, double currentRotation) {
     canvas.drawRect(
-      Rect.fromPoints(start, end),
+      Rect.fromPoints(startPosition, endPosition),
       paint..style = PaintingStyle.stroke,
     );
   }
@@ -87,26 +74,63 @@ class Rectangle extends Shape {
   }
 }
 
-Offset transformToOriginalCoordinateSystem(
-    Offset point, double angle, bool flipX, bool flipY, Size imageSize) {
-  // Calculate the center of the image
-  final center = Offset(imageSize.width / 2, imageSize.height / 2);
+class Circle extends Shape {
+  @override
+  void draw(Canvas canvas, Size size, Paint paint, double currentRotation) {
+    final radius = (startPosition - endPosition).distance / 2;
+    final center = Offset(
+      (startPosition.dx + endPosition.dx) / 2,
+      (startPosition.dy + endPosition.dy) / 2,
+    );
+    canvas.drawCircle(
+      center,
+      radius,
+      paint..style = PaintingStyle.stroke,
+    );
+  }
 
-  // Translate the point to the origin
-  var translatedPoint = point - center;
+  @override
+  Handle getHandle() {
+    throw UnimplementedError();
+  }
 
-  // Apply the inverse rotation
-  final rotatedPoint = Offset(
-    translatedPoint.dx * cos(-angle) - translatedPoint.dy * sin(-angle),
-    translatedPoint.dx * sin(-angle) + translatedPoint.dy * cos(-angle),
+  @override
+  void move(Offset position) {
+    // TODO: implement move
+  }
+
+  @override
+  void resize(Offset position) {
+    // TODO: implement resize
+  }
+
+  @override
+  void select() {
+    // TODO: implement select
+  }
+}
+
+Offset _transformOffset(
+    Offset offset, bool xFlip, bool yFlip, double rotationAngle, Size image) {
+  // Apply flip transformations
+  double x = xFlip ? image.width - offset.dx : offset.dx;
+  double y = yFlip ? image.height - offset.dy : offset.dy;
+  Offset flippedOffset = Offset(x, y);
+
+  // Apply rotation transformation
+  return _rotateOffset(
+      flippedOffset, rotationAngle, Offset(image.width / 2, image.height / 2));
+}
+
+Offset _rotateOffset(Offset offset, double angle, Offset center) {
+  double rad = angle;
+  double cosRad = cos(rad);
+  double sinRad = sin(rad);
+  double dx = offset.dx - center.dx;
+  double dy = offset.dy - center.dy;
+
+  return Offset(
+    dx * cosRad - dy * sinRad + center.dx,
+    dx * sinRad + dy * cosRad + center.dy,
   );
-
-  // Apply the inverse flip
-  final flippedPoint = Offset(
-    flipX ? -rotatedPoint.dx : rotatedPoint.dx,
-    flipY ? -rotatedPoint.dy : rotatedPoint.dy,
-  );
-
-  // Translate the point back to the original position
-  return flippedPoint + center;
 }

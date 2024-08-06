@@ -3,7 +3,7 @@ import 'dart:ui';
 abstract class ImageCanvas {}
 
 abstract class Shape {
-  void draw(Canvas canvas, Size size, Paint paint);
+  void draw(Canvas canvas, Size size, Paint paint, double currentRotation);
 
   ///start position
   Offset startPosition = Offset.zero;
@@ -37,6 +37,9 @@ abstract class Shape {
 
   ///yFlip
   bool yFlip = false;
+
+  /// is crop shape
+  bool crop = false;
 }
 
 class Handle {

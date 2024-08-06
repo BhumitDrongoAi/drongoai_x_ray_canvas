@@ -236,6 +236,15 @@ class CanvasController extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool _isCrop = false;
+
+  bool get isCrop => _isCrop;
+
+  set isCrop(bool value) {
+    _isCrop = value;
+    notifyListeners();
+  }
+
   /// add a shape
   void addShape(Shape shape) {
     _shapes.add(shape);
@@ -247,10 +256,23 @@ class CanvasController extends ChangeNotifier {
 
   ///panUpdate
   void onPanUpdate(DragUpdateDetails details) {
-    if (selectedShape != ActiveShape.none) {
-      _shapes.last.endPosition = details.localPosition;
+    try {
+      if (selectedShape != ActiveShape.none) {
+        _shapes.last.endPosition = details.localPosition;
 
-      notifyListeners();
+        notifyListeners();
+      }
+    } catch (e) {
+      dev.log('error : $e');
+    }
+  }
+
+  ///panEnd
+  void onPanEnd(DragEndDetails details) {
+    if (isCrop) {
+      // fitImageToViewPortCroped();
+      isCrop = false;
+      selectedShape = ActiveShape.none;
     }
   }
 
@@ -267,6 +289,7 @@ class CanvasController extends ChangeNotifier {
             ..rotation = rotation
             ..xFlip = xFlip
             ..yFlip = yFlip
+            ..crop = isCrop
             ..scaleFactor = scaleFactor,
         );
       }
@@ -283,7 +306,7 @@ class CanvasController extends ChangeNotifier {
       case ActiveShape.rectangle:
         return Rectangle();
       case ActiveShape.circle:
-        throw UnimplementedError();
+        return Circle();
       case ActiveShape.ellipse:
         throw UnimplementedError();
       case ActiveShape.angle:

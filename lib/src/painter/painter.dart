@@ -51,10 +51,17 @@ class CanvasPainter extends CustomPainter {
       ..drawRect(Rect.fromPoints(Offset.zero, Offset(size.width, size.height)),
           Paint()..color = Colors.black.withOpacity(0.2));
 
+    canvas.drawCircle(Offset(size.width / 2, size.height / 2), 20,
+        paint..color = Colors.white);
     for (final shape in canvasController.shapes) {
       ///rotation for the shape
 
-      shape.draw(canvas, size, Paint()..color = canvasController.paintColor);
+      shape.draw(
+        canvas,
+        size,
+        Paint()..color = canvasController.paintColor,
+        canvasController.rotation,
+      );
     }
   }
 
