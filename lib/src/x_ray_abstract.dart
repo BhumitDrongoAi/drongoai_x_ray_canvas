@@ -40,6 +40,9 @@ abstract class Shape {
 
   /// is crop shape
   bool crop = false;
+
+  ///image size
+  Size imageSize = Size.zero;
 }
 
 class Handle {

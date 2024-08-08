@@ -7,6 +7,8 @@ import 'package:drongoai_x_ray_canvas/src/x_ray_abstract.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer' as dev;
 
+import 'package:flutter/widgets.dart';
+
 /// {@template canvas_controller}
 /// Canvas controller for the image viewer
 /// {@endtemplate}
@@ -129,9 +131,7 @@ class CanvasController extends ChangeNotifier {
   /// Fit the image to the view port
   void fitImageToViewPort() {
     final parentSize = containerSize; // Replace with your parent size
-    final imageSize = rotation == 90 || rotation == 270
-        ? Size(image.height.toDouble(), image.width.toDouble())
-        : Size(image.width.toDouble(), image.height.toDouble());
+
 // Calculate the scale to fit the image
     final scale = _calculateScale(parentSize, imageSize);
     scaleFactor = scale;
@@ -290,6 +290,7 @@ class CanvasController extends ChangeNotifier {
             ..xFlip = xFlip
             ..yFlip = yFlip
             ..crop = isCrop
+            ..imageSize = Size(image.width.toDouble(), image.height.toDouble())
             ..scaleFactor = scaleFactor,
         );
       }

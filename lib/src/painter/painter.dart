@@ -42,27 +42,35 @@ class CanvasPainter extends CustomPainter {
       ..translate(-cx, -cy)
 
       /// Define the source and destination rectangles
-      ..drawImageRect(image, srcRect, dstRect, paint)
+      ..drawImageRect(image, srcRect, dstRect, paint);
 
-      /// Restore the canvas state
-      ..restore()
+    /// Restore the canvas state
+    ///
 
-      /// Draw a black rectangle
-      ..drawRect(Rect.fromPoints(Offset.zero, Offset(size.width, size.height)),
-          Paint()..color = Colors.black.withOpacity(0.2));
+    /// Draw a black rectangle
+    canvas.drawRect(dstRect, Paint()..color = Colors.white.withOpacity(0.3));
 
     canvas.drawCircle(Offset(size.width / 2, size.height / 2), 20,
         paint..color = Colors.white);
+
     for (final shape in canvasController.shapes) {
-      ///rotation for the shape
+      canvas.save();
+
+      canvas.translate(dstRect.topLeft.dx, dstRect.topLeft.dy);
+      // canvas.translate(-dstRect.topLeft.dx, -dstRect.topLeft.dy);
 
       shape.draw(
         canvas,
-        size,
+        dstRect.size,
         Paint()..color = canvasController.paintColor,
         canvasController.rotation,
       );
+
+      canvas.restore();
     }
+    // Restore the canvas state
+
+    canvas.restore();
   }
 
   @override
