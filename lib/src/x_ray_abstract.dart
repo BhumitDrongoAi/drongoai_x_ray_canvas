@@ -3,7 +3,8 @@ import 'dart:ui';
 abstract class ImageCanvas {}
 
 abstract class Shape {
-  void draw(Canvas canvas, Size size, Paint paint, double currentRotation);
+  void draw(
+      Canvas canvas, Size size, Paint paint, double currentRotation, Rect rect);
 
   ///start position
   Offset startPosition = Offset.zero;

@@ -57,14 +57,14 @@ class CanvasPainter extends CustomPainter {
       canvas.save();
 
       canvas.translate(dstRect.topLeft.dx, dstRect.topLeft.dy);
-      // canvas.translate(-dstRect.topLeft.dx, -dstRect.topLeft.dy);
 
       shape.draw(
-        canvas,
-        dstRect.size,
-        Paint()..color = canvasController.paintColor,
-        canvasController.rotation,
-      );
+          canvas,
+          dstRect.size,
+          Paint()..color = canvasController.paintColor,
+          canvasController.rotation,
+          dstRect);
+      canvas.translate(-dstRect.topLeft.dx, -dstRect.topLeft.dy);
 
       canvas.restore();
     }

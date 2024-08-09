@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 
 class Line extends Shape {
   @override
-  void draw(Canvas canvas, Size size, Paint paint, double currentRotation) {
+  void draw(Canvas canvas, Size size, Paint paint, double currentRotation,
+      Rect rect) {
     final start = transformToOriginalCoordinateSystem(
       startPosition,
       rotation * pi / 180,
@@ -22,7 +23,7 @@ class Line extends Shape {
       size,
     );
 
-    print('start $start end $end');
+    print('start $start end $end  size ${size}');
     canvas.drawRect(
       Rect.fromLTRB(0, 0, size.width, size.height),
       paint..color = Colors.red.withOpacity(0.1),
@@ -48,24 +49,31 @@ class Line extends Shape {
 
 class Rectangle extends Shape {
   @override
-  void draw(Canvas canvas, Size size, Paint paint, double currentRotation) {
+  void draw(Canvas canvas, Size size, Paint paint, double currentRotation,
+      Rect rect) {
     final start = transformToOriginalCoordinateSystem(
-      startPosition,
+      Offset.zero,
       rotation * pi / 180,
       xFlip,
       yFlip,
-      size,
+      rect.size,
     );
     final end = transformToOriginalCoordinateSystem(
-      endPosition,
+      Offset(imageSize.width, imageSize.height),
       rotation * pi / 180,
       xFlip,
       yFlip,
-      size,
+      rect.size,
+    );
+    canvas.drawRect(
+      Rect.fromLTRB(0, 0, size.width, size.height),
+      paint..color = Colors.red.withOpacity(0.1),
     );
     canvas.drawRect(
       Rect.fromPoints(start, end),
-      paint..style = PaintingStyle.stroke,
+      paint
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 10,
     );
   }
 
@@ -86,7 +94,8 @@ class Rectangle extends Shape {
 
 class Circle extends Shape {
   @override
-  void draw(Canvas canvas, Size size, Paint paint, double currentRotation) {
+  void draw(Canvas canvas, Size size, Paint paint, double currentRotation,
+      Rect rect) {
     final radius = (startPosition - endPosition).distance / 2;
     final start = transformToOriginalCoordinateSystem(
       startPosition,

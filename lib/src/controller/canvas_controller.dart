@@ -290,7 +290,7 @@ class CanvasController extends ChangeNotifier {
             ..xFlip = xFlip
             ..yFlip = yFlip
             ..crop = isCrop
-            ..imageSize = Size(image.width.toDouble(), image.height.toDouble())
+            ..imageSize = imageSize
             ..scaleFactor = scaleFactor,
         );
       }
