@@ -14,14 +14,16 @@ class CanvasPainter extends CustomPainter {
   final CanvasController canvasController;
   @override
   void paint(Canvas canvas, Size size) {
+    ui.PictureRecorder recorder = ui.PictureRecorder();
     final image = canvasController.image;
 
     final srcRect =
         Rect.fromLTWH(0, 0, image.width.toDouble(), image.height.toDouble());
     final dstRect = Rect.fromCenter(
-        center: Offset(size.width / 2, size.height / 2),
-        width: image.width.toDouble(),
-        height: image.height.toDouble());
+      center: Offset(size.width / 2, size.height / 2),
+      width: image.width.toDouble(),
+      height: image.height.toDouble(),
+    );
     final paint = Paint();
     final cx = size.width / 2;
     final cy = size.height / 2;

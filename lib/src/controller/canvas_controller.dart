@@ -5,6 +5,7 @@ import 'package:drongoai_x_ray_canvas/src/enum/shape_enum.dart';
 import 'package:drongoai_x_ray_canvas/src/shapes/shape.dart';
 import 'package:drongoai_x_ray_canvas/src/x_ray_abstract.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'dart:developer' as dev;
 
 import 'package:flutter/widgets.dart';
@@ -253,12 +254,18 @@ class CanvasController extends ChangeNotifier {
 
   ///tapDown
   void onTapDown(Offset position) {}
+  Offset _constrainToImage(Offset position, Size imageSize) {
+    final double dx = position.dx.clamp(0.0, imageSize.width);
+    final double dy = position.dy.clamp(0.0, imageSize.height);
+    return Offset(dx, dy);
+  }
 
   ///panUpdate
   void onPanUpdate(DragUpdateDetails details) {
     try {
       if (selectedShape != ActiveShape.none) {
-        _shapes.last.endPosition = details.localPosition;
+        final constrained = _constrainToImage(details.localPosition, imageSize);
+        _shapes.last.endPosition = constrained;
 
         notifyListeners();
       }
@@ -281,11 +288,20 @@ class CanvasController extends ChangeNotifier {
     if (selectedShape != ActiveShape.none) {
       final shape = getShape(activeShape: selectedShape);
 
+      print('imageSize: $imageSize');
+      final constrained = _constrainToImage(details.localPosition, imageSize);
+      // final position = transformToOriginalCoordinateSystem(
+      //   constrained,
+      //   rotation,
+      //   xFlip,
+      //   yFlip,
+      //   imageSize,
+      // );
       if (shape != null) {
         addShape(
           shape
-            ..startPosition = details.localPosition
-            ..endPosition = details.localPosition
+            ..startPosition = constrained
+            ..endPosition = constrained
             ..rotation = rotation
             ..xFlip = xFlip
             ..yFlip = yFlip
