@@ -2,13 +2,12 @@ import 'dart:math';
 import 'dart:ui' as ui;
 
 import 'package:drongoai_x_ray_canvas/src/enum/shape_enum.dart';
+import 'package:drongoai_x_ray_canvas/src/helper/typedefs.dart';
 import 'package:drongoai_x_ray_canvas/src/shapes/shape.dart';
 import 'package:drongoai_x_ray_canvas/src/x_ray_abstract.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'dart:developer' as dev;
 
-import 'package:flutter/widgets.dart';
+import 'dart:developer' as dev;
 
 /// {@template canvas_controller}
 /// Canvas controller for the image viewer
@@ -65,6 +64,17 @@ class CanvasController extends ChangeNotifier {
     notifyListeners();
   }
 
+  ///CurrentCanvasStateInfo info
+  CurrentCanvasStateInfo _currentCanvasStateInfo = CurrentCanvasStateInfo();
+
+  /// Get the current canvas state info
+  CurrentCanvasStateInfo get currentCanvasStateInfo => _currentCanvasStateInfo;
+
+  /// Set the current canvas state info
+  set currentCanvasStateInfo(CurrentCanvasStateInfo value) {
+    _currentCanvasStateInfo = value;
+  }
+
   ///xFlip
   bool _xFlip = false;
 
@@ -74,6 +84,7 @@ class CanvasController extends ChangeNotifier {
   /// Set the xFlip
   set xFlip(bool value) {
     _xFlip = value;
+    currentCanvasStateInfo.flip.xFlip = _xFlip;
     notifyListeners();
   }
 
@@ -86,6 +97,7 @@ class CanvasController extends ChangeNotifier {
   /// Set the yFlip
   set yFlip(bool value) {
     _yFlip = value;
+    currentCanvasStateInfo.flip.yFlip = _yFlip;
     notifyListeners();
   }
 
@@ -115,6 +127,7 @@ class CanvasController extends ChangeNotifier {
   /// Set the scale factor
   set scaleFactor(double value) {
     _scaleFactor = value;
+    currentCanvasStateInfo.scaleFactor = _scaleFactor;
     notifyListeners();
   }
 
@@ -201,6 +214,7 @@ class CanvasController extends ChangeNotifier {
         ? Size(image.width.toDouble(), image.height.toDouble())
         : Size(image.height.toDouble(), image.width.toDouble());
 
+    currentCanvasStateInfo.rotation = _rotation;
     notifyListeners();
 
     fitImageToViewPort();
@@ -253,7 +267,27 @@ class CanvasController extends ChangeNotifier {
   }
 
   ///tapDown
-  void onTapDown(Offset position) {}
+  void onTapDown(Offset position) {
+    if (selectedShape == ActiveShape.none) {
+      final isAnyShapeSelected = _shapes.any((shape) => shape.selected);
+
+      if (isAnyShapeSelected) {
+        shapes = _shapes.map((shape) => shape..selected = false).toList();
+      }
+
+      ///select the shape
+      for (final shape in _shapes) {
+        shape.select(position);
+
+        if (shape.selected) {
+          notifyListeners();
+          print('shape selected');
+          break;
+        }
+      }
+    }
+  }
+
   Offset _constrainToImage(Offset position, Size imageSize) {
     final double dx = position.dx.clamp(0.0, imageSize.width);
     final double dy = position.dy.clamp(0.0, imageSize.height);

@@ -38,9 +38,10 @@ class _ImageViewerState extends State<ImageViewer> {
   void initState() {
     super.initState();
 
-    widget.canvasController.addListener(() {
-      // print(
-      //     'image_viewer===> ${widget.canvasController.transformationController}');
+    widget.canvasController.transformationController.addListener(() {
+      widget.canvasController.scaleFactor = widget
+          .canvasController.transformationController.value
+          .getMaxScaleOnAxis();
     });
   }
 
@@ -64,100 +65,11 @@ class _ImageViewerState extends State<ImageViewer> {
                 transformationController: controller.transformationController,
                 scaleFactor: 50 * 50,
                 child: GestureDetector(
-                  onTap: () async {
-                    Future<void> saveImage(ByteData byteData) async {
-                      final buffer = byteData.buffer.asUint8List();
-
-                      // Get the directory to save the image
-                      final directory =
-                          await getApplicationDocumentsDirectory();
-                      final path = '${directory.path}/custom_painter_image.png';
-
-                      // Save the file
-                      final file = File(path);
-                      await file.writeAsBytes(buffer);
-                      print('Image saved to $path');
-                    }
-
-                    ui.PictureRecorder recorder = ui.PictureRecorder();
-                    Canvas canvas = Canvas(
-                        recorder,
-                        Rect.fromPoints(
-                            Offset(0, 0),
-                            Offset(controller.imageSize.width,
-                                controller.imageSize.height)));
-
-                    final painter = CanvasPainter(canvasController: controller);
-                    painter.paint(
-                        canvas,
-                        Size(controller.imageSize.width,
-                            controller.imageSize.height));
-                    ui.Picture picture = recorder.endRecording();
-                    ui.Image image = await picture.toImage(
-                        controller.imageSize.width.toInt(),
-                        controller.imageSize.height
-                            .toInt()); // Specify the width and height
-                    ByteData? byteData = await image.toByteData(
-                        format: ui.ImageByteFormat.rawExtendedRgba128);
-                    if (byteData != null) {
-                      img.Image imgImage = img.Image.fromBytes(
-                        width: controller.imageSize.width.toInt(),
-                        height: controller.imageSize.height.toInt(),
-                        bytes: byteData.buffer,
-                        format: img.Format
-                            .uint8, // This reads as an 8-bit image, we'll convert it next
-                      );
-
-                      // Step 5: Convert the img.Image to 16-bit per channel
-                      // img.Image img16Bit = img.Image.from(
-                      //   imgImage,
-                      // );
-
-                      // // Example: Adjust the image to use 16-bit per channel (scaling pixel values)
-                      // for (int y = 0; y < img16Bit.height / 2; y++) {
-                      //   for (int x = 0; x < img16Bit.width / 2; x++) {
-                      //     final pixel = img16Bit.getPixel(x, y);
-                      //     num red = pixel.getChannel(img.Channel.red);
-                      //     num green = pixel.getChannel(img.Channel.green);
-                      //     num blue = pixel.getChannel(img.Channel.blue);
-                      //     num alpha = pixel.getChannel(img.Channel.alpha);
-                      //     img16Bit.setPixelRgba(x, y, red, green, blue, alpha);
-                      //   }
-                      // }
-                      Future<void> _saveImage(img.Image image) async {
-                        final directory =
-                            await getApplicationDocumentsDirectory();
-                        final path =
-                            '${directory.path}/custom_painter_image_16bit.tiff';
-                        final path2 =
-                            '${directory.path}/custom_painter_image_16bit.tiff';
-                        File(path).writeAsBytesSync(img.encodeTiff(image));
-                        await img.encodeTiffFile(path2, image);
-                        print('Image saved to $path');
-                      }
-
-                      // Step 6: Save the image as PNG
-                      await _saveImage(imgImage);
-                      // Step 4: Convert the image to ByteData
-                      // ByteData? byteData = await image.toByteData(
-                      //     format: ui.ImageByteFormat.rawExtendedRgba128);
-
-                      // if (byteData != null) {
-                      //   // Step 5: Save the image
-                      //   saveImage(byteData);
-                      //   showBottomSheet(
-                      //       context: context,
-                      //       builder: (_) {
-                      //         return Image.memory(byteData.buffer.asUint8List());
-                      //       });
-                      // }
-                    }
-                  },
                   onPanUpdate: (details) {
                     controller.onPanUpdate(details);
                   },
                   onTapDown: (details) {
-                    // controller.onTapDown(details.localPosition);
+                    controller.onTapDown(details.localPosition);
                   },
                   onPanStart: (details) {
                     controller.onPanStart(details);

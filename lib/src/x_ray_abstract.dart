@@ -1,10 +1,17 @@
 import 'dart:ui';
 
+import 'package:drongoai_x_ray_canvas/src/helper/typedefs.dart';
+
 abstract class ImageCanvas {}
 
 abstract class Shape {
   void draw(
-      Canvas canvas, Size size, Paint paint, double currentRotation, Rect rect);
+    Canvas canvas,
+    Size size,
+    Paint paint,
+    Rect rect,
+    CurrentCanvasStateInfo info,
+  );
 
   ///start position
   Offset startPosition = Offset.zero;
@@ -19,7 +26,7 @@ abstract class Shape {
   bool selected = false;
 
   ///select the shape
-  void select();
+  void select(Offset position);
 
   ///resize the shape
   void resize(Offset position);
@@ -47,6 +54,27 @@ abstract class Shape {
 
   /// offset difference
   double offsetDif = 0.0;
+
+  ///rect size
+  Size rectSize = Size.zero;
+
+  ///toJson
+  Map<String, dynamic> toJson() {
+    return {
+      'startPosition': startPosition,
+      'endPosition': endPosition,
+      'selected': selected,
+      'rotation': rotation,
+      'scaleFactor': scaleFactor,
+      'xFlip': xFlip,
+      'yFlip': yFlip,
+      'crop': crop,
+      'imageSize': imageSize,
+      'offsetDif': offsetDif,
+    };
+  }
+
+  ///fromJson
 }
 
 class Handle {
