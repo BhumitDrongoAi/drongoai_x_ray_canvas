@@ -6,8 +6,13 @@ import 'package:flutter/material.dart';
 
 class Line extends Shape {
   @override
-  void draw(Canvas canvas, Size size, Paint paint, double currentRotation,
-      Rect rect) {
+  void draw(
+    Canvas canvas,
+    Size size,
+    Paint paint,
+    double currentRotation,
+    Rect rect,
+  ) {
     final start = transformToOriginalCoordinateSystem(
       startPosition,
       rotation * pi / 180,
@@ -28,27 +33,51 @@ class Line extends Shape {
     //   Rect.fromLTRB(0, 0, size.width, size.height),
     //   paint..color = Colors.red.withOpacity(0.1),
     // );
-    final offsetDif = rect.topLeft.dx.abs();
+    final _offsetDif = rect.topLeft.dx.abs();
+
+    if (_offsetDif > 0) {
+      offsetDif = _offsetDif;
+    }
 // flutter: dxogg 276.0    start Offset(1347.3, 1400.0) end Offset(947.1, 977.8)  === statpos Offset(1652.0, 1347.3)
 
     final _start = rotation == 0 || rotation == 180
         ? start
         : rotation == 90 || rotation == 270
             ? rotation == 90
-                ? start + Offset(offsetDif, offsetDif)
-                : start - Offset(offsetDif, offsetDif)
+                ? start +
+                    Offset(
+                      xFlip ? -offsetDif : offsetDif,
+                      yFlip ? -offsetDif : offsetDif,
+                    )
+                : start -
+                    Offset(
+                      xFlip ? -offsetDif : offsetDif,
+                      yFlip ? -offsetDif : offsetDif,
+                    )
             : start;
     final _end = rotation == 0 || rotation == 180
         ? end
         : rotation == 90 || rotation == 270
             ? rotation == 90
-                ? end + Offset(offsetDif, offsetDif)
-                : end - Offset(offsetDif, offsetDif)
+                ? end +
+                    Offset(
+                      xFlip ? -offsetDif : offsetDif,
+                      yFlip ? -offsetDif : offsetDif,
+                    )
+                : end -
+                    Offset(
+                      xFlip ? -offsetDif : offsetDif,
+                      yFlip ? -offsetDif : offsetDif,
+                    )
             : end;
     print(
-        'dxogg $offsetDif    start $_start end $_end  === statpos ${startPosition}');
+      'dxogg $offsetDif    start $_start end $_end  === statpos ${startPosition}',
+    );
     canvas.drawCircle(
-        rect.center - rect.topLeft, 20, Paint()..color = Colors.yellow);
+      rect.center - rect.topLeft,
+      20,
+      Paint()..color = Colors.yellow,
+    );
     canvas.drawLine(_start, _end, paint..color = Colors.yellow);
     // canvas.restore();
   }
@@ -70,8 +99,13 @@ class Line extends Shape {
 
 class Rectangle extends Shape {
   @override
-  void draw(Canvas canvas, Size size, Paint paint, double currentRotation,
-      Rect rect) {
+  void draw(
+    Canvas canvas,
+    Size size,
+    Paint paint,
+    double currentRotation,
+    Rect rect,
+  ) {
     final start = transformToOriginalCoordinateSystem(
       startPosition,
       rotation * pi / 180,
@@ -87,24 +121,42 @@ class Rectangle extends Shape {
       rect.size,
     );
 
-    final offsetDif = rect.topLeft.dx.abs();
-    // canvas.drawRect(
-    //   Rect.fromLTRB(0, 0, size.width, size.height),
-    //   paint..color = Colors.red.withOpacity(0.1),
-    // );
+    final _offsetDif = rect.topLeft.dx.abs();
+
+    if (_offsetDif > 0) {
+      offsetDif = _offsetDif;
+    }
+// flutter: dxogg 276.0    start Offset(1347.3, 1400.0) end Offset(947.1, 977.8)  === statpos Offset(1652.0, 1347.3)
+
     final _start = rotation == 0 || rotation == 180
         ? start
         : rotation == 90 || rotation == 270
             ? rotation == 90
-                ? start + Offset(offsetDif, offsetDif)
-                : start - Offset(offsetDif, offsetDif)
+                ? start +
+                    Offset(
+                      xFlip ? -offsetDif : offsetDif,
+                      yFlip ? -offsetDif : offsetDif,
+                    )
+                : start -
+                    Offset(
+                      xFlip ? -offsetDif : offsetDif,
+                      yFlip ? -offsetDif : offsetDif,
+                    )
             : start;
     final _end = rotation == 0 || rotation == 180
         ? end
         : rotation == 90 || rotation == 270
             ? rotation == 90
-                ? end + Offset(offsetDif, offsetDif)
-                : end - Offset(offsetDif, offsetDif)
+                ? end +
+                    Offset(
+                      xFlip ? -offsetDif : offsetDif,
+                      yFlip ? -offsetDif : offsetDif,
+                    )
+                : end -
+                    Offset(
+                      xFlip ? -offsetDif : offsetDif,
+                      yFlip ? -offsetDif : offsetDif,
+                    )
             : end;
     canvas.drawRect(
       Rect.fromPoints(_start, _end),
@@ -131,8 +183,13 @@ class Rectangle extends Shape {
 
 class Circle extends Shape {
   @override
-  void draw(Canvas canvas, Size size, Paint paint, double currentRotation,
-      Rect rect) {
+  void draw(
+    Canvas canvas,
+    Size size,
+    Paint paint,
+    double currentRotation,
+    Rect rect,
+  ) {
     final radius = (startPosition - endPosition).distance / 2;
     final start = transformToOriginalCoordinateSystem(
       startPosition,
@@ -149,32 +206,42 @@ class Circle extends Shape {
       rect.size,
     );
 
-    final offsetDif = rect.topLeft.dx.abs();
-    // canvas.drawRect(
-    //   Rect.fromLTRB(0, 0, size.width, size.height),
-    //   paint..color = Colors.red.withOpacity(0.1),
-    // );
+    final _offsetDif = rect.topLeft.dx.abs();
 
-    // (currentRotation == 0 || currentRotation == 180) &&
-    //         (rotation == 90 || currentRotation == 270)
-    //     ? rotation == 90
-    //         ? start + Offset(offsetDif, offsetDif)
-    //         : start - Offset(offsetDif, offsetDif)
-    //     :
+    if (_offsetDif > 0) {
+      offsetDif = _offsetDif;
+    }
+// flutter: dxogg 276.0    start Offset(1347.3, 1400.0) end Offset(947.1, 977.8)  === statpos Offset(1652.0, 1347.3)
 
     final _start = rotation == 0 || rotation == 180
         ? start
         : rotation == 90 || rotation == 270
             ? rotation == 90
-                ? start + Offset(offsetDif, offsetDif)
-                : start - Offset(offsetDif, offsetDif)
+                ? start +
+                    Offset(
+                      xFlip ? -offsetDif : offsetDif,
+                      yFlip ? -offsetDif : offsetDif,
+                    )
+                : start -
+                    Offset(
+                      xFlip ? -offsetDif : offsetDif,
+                      yFlip ? -offsetDif : offsetDif,
+                    )
             : start;
     final _end = rotation == 0 || rotation == 180
         ? end
         : rotation == 90 || rotation == 270
             ? rotation == 90
-                ? end + Offset(offsetDif, offsetDif)
-                : end - Offset(offsetDif, offsetDif)
+                ? end +
+                    Offset(
+                      xFlip ? -offsetDif : offsetDif,
+                      yFlip ? -offsetDif : offsetDif,
+                    )
+                : end -
+                    Offset(
+                      xFlip ? -offsetDif : offsetDif,
+                      yFlip ? -offsetDif : offsetDif,
+                    )
             : end;
     final center = Offset(
       (_start.dx + _end.dx) / 2,
@@ -204,9 +271,55 @@ class Circle extends Shape {
 
 class Angle extends Shape {
   @override
-  void draw(Canvas canvas, Size size, Paint paint, double currentRotation,
-      Rect rect) {
-    // TODO: implement draw
+  void draw(
+    Canvas canvas,
+    Size size,
+    Paint paint,
+    double currentRotation,
+    Rect rect,
+  ) {
+    final radius = (startPosition - endPosition).distance / 2;
+    final start = transformToOriginalCoordinateSystem(
+      startPosition,
+      rotation * pi / 180,
+      xFlip,
+      yFlip,
+      rect.size,
+    );
+
+    final end = transformToOriginalCoordinateSystem(
+      endPosition,
+      rotation * pi / 180,
+      xFlip,
+      yFlip,
+      rect.size,
+    );
+
+    final offsetDif = rect.topLeft.dx.abs();
+
+    final _start = rotation == 0 || rotation == 180
+        ? start
+        : rotation == 90 || rotation == 270
+            ? rotation == 90
+                ? start + Offset(offsetDif, offsetDif)
+                : start - Offset(offsetDif, offsetDif)
+            : start;
+    final _end = rotation == 0 || rotation == 180
+        ? end
+        : rotation == 90 || rotation == 270
+            ? rotation == 90
+                ? end + Offset(offsetDif, offsetDif)
+                : end - Offset(offsetDif, offsetDif)
+            : end;
+    final center = Offset(
+      (_start.dx + _end.dx) / 2,
+      (_start.dy + _end.dy) / 2,
+    );
+    canvas.drawCircle(
+      center,
+      radius,
+      paint..style = PaintingStyle.stroke,
+    );
   }
 
   @override

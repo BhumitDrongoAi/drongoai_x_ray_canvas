@@ -44,6 +44,9 @@ abstract class Shape {
 
   ///image size
   Size imageSize = Size.zero;
+
+  /// offset difference
+  double offsetDif = 0.0;
 }
 
 class Handle {
