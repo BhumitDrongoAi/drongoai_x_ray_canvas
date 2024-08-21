@@ -135,7 +135,7 @@ class CanvasController extends ChangeNotifier {
   void restoreCanvas() {
     fitImageToViewPort();
     _shapes.clear();
-    _selectedShape = ActiveShape.none;
+    _activeShape = ActiveShape.none;
     xFlip = false;
     yFlip = false;
     rotation = 0.0;
@@ -240,14 +240,14 @@ class CanvasController extends ChangeNotifier {
     notifyListeners();
   }
 
-  ActiveShape _selectedShape = ActiveShape.none;
+  ActiveShape _activeShape = ActiveShape.none;
 
   /// Get the selected shape
-  ActiveShape get selectedShape => _selectedShape;
+  ActiveShape get activeShape => _activeShape;
 
   /// Set the selected shape
-  set selectedShape(ActiveShape value) {
-    _selectedShape = _selectedShape == value ? ActiveShape.none : value;
+  set activeShape(ActiveShape value) {
+    _activeShape = _activeShape == value ? ActiveShape.none : value;
     notifyListeners();
   }
 
@@ -268,24 +268,49 @@ class CanvasController extends ChangeNotifier {
 
   ///tapDown
   void onTapDown(Offset position) {
-    if (selectedShape == ActiveShape.none) {
+    if (activeShape == ActiveShape.none) {
       final isAnyShapeSelected = _shapes.any((shape) => shape.selected);
-
       if (isAnyShapeSelected) {
         shapes = _shapes.map((shape) => shape..selected = false).toList();
+        selectedShape = null;
+        selectedHandleType = HandleType.none;
       }
 
-      ///select the shape
       for (final shape in _shapes) {
-        shape.select(position);
+        shape.select(position, currentCanvasStateInfo);
 
         if (shape.selected) {
-          notifyListeners();
+          // notifyListeners();
           print('shape selected');
+
+          print(
+              'handle position : ${shape.getHandle(position, currentCanvasStateInfo)?.type}');
+          selectedShape = shape;
+          selectedHandleType =
+              shape.getHandle(position, currentCanvasStateInfo)?.type ??
+                  HandleType.none;
           break;
         }
       }
     }
+  }
+
+  HandleType _selectedHandleType = HandleType.none;
+
+  HandleType get selectedHandleType => _selectedHandleType;
+
+  set selectedHandleType(HandleType value) {
+    _selectedHandleType = value;
+    notifyListeners();
+  }
+
+  Shape? _selectedShape = null;
+
+  Shape? get selectedShape => _selectedShape;
+
+  set selectedShape(Shape? value) {
+    _selectedShape = value;
+    notifyListeners();
   }
 
   Offset _constrainToImage(Offset position, Size imageSize) {
@@ -297,12 +322,25 @@ class CanvasController extends ChangeNotifier {
   ///panUpdate
   void onPanUpdate(DragUpdateDetails details) {
     try {
-      if (selectedShape != ActiveShape.none) {
+      if (activeShape != ActiveShape.none) {
         final constrained = _constrainToImage(details.localPosition, imageSize);
         _shapes.last.endPosition = constrained;
-
-        notifyListeners();
       }
+
+      print('activeShape : ${activeShape}');
+
+      if (activeShape == ActiveShape.none &&
+          selectedHandleType != HandleType.none &&
+          selectedShape != null) {
+        print('handle type : ${selectedHandleType}');
+        final shape = selectedShape;
+        if (shape != null) {
+          final constrained =
+              _constrainToImage(details.localPosition, imageSize);
+          shape.resize(constrained, currentCanvasStateInfo, selectedHandleType);
+        }
+      }
+      notifyListeners();
     } catch (e) {
       dev.log('error : $e');
     }
@@ -313,14 +351,15 @@ class CanvasController extends ChangeNotifier {
     if (isCrop) {
       // fitImageToViewPortCroped();
       isCrop = false;
-      selectedShape = ActiveShape.none;
+      activeShape = ActiveShape.none;
     }
+    selectedHandleType = HandleType.none;
   }
 
   /// panStart
   void onPanStart(DragStartDetails details) {
-    if (selectedShape != ActiveShape.none) {
-      final shape = getShape(activeShape: selectedShape);
+    if (activeShape != ActiveShape.none) {
+      final shape = getShape(activeShape: activeShape);
 
       print('imageSize: $imageSize');
       final constrained = _constrainToImage(details.localPosition, imageSize);
@@ -349,7 +388,7 @@ class CanvasController extends ChangeNotifier {
 
   /// Get the shape from the active shape
   Shape? getShape({ActiveShape? activeShape}) {
-    switch (activeShape ?? selectedShape) {
+    switch (activeShape ?? this.activeShape) {
       case ActiveShape.none:
         return null;
       case ActiveShape.line:

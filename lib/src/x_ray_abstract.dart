@@ -19,20 +19,22 @@ abstract class Shape {
   ///end position
   Offset endPosition = Offset.zero;
 
+  List<Handle> handles = <Handle>[];
+
   /// Get the handle for the shape
-  Handle getHandle();
+  Handle? getHandle(Offset position, CurrentCanvasStateInfo info);
 
   /// is the shape selected
   bool selected = false;
 
   ///select the shape
-  void select(Offset position);
+  void select(Offset position, CurrentCanvasStateInfo info);
 
   ///resize the shape
-  void resize(Offset position);
+  void resize(Offset position, CurrentCanvasStateInfo info, HandleType type);
 
   ///move the shape
-  void move(Offset position);
+  void move(Offset position, CurrentCanvasStateInfo info);
 
   ///canvas rotation
   double rotation = 0.0;
@@ -82,11 +84,15 @@ class Handle {
 
   double size = 60.0;
 
-  void draw(Canvas canvas, Size size) {}
+  HandleType type = HandleType.none;
+}
 
-  void select() {}
-
-  void move(Offset position) {}
-
-  void resize(Offset position) {}
+enum HandleType {
+  none,
+  start,
+  end,
+  topLeft,
+  topRight,
+  bottomLeft,
+  bottomRight,
 }

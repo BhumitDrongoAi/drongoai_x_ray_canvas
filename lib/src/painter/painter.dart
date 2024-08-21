@@ -66,9 +66,9 @@ class CanvasPainter extends CustomPainter {
           Paint()..color = canvasController.paintColor,
           dstRect,
           canvasController.currentCanvasStateInfo);
-      canvas.translate(-dstRect.topLeft.dx, -dstRect.topLeft.dy);
-
-      canvas.restore();
+      canvas
+        ..translate(-dstRect.topLeft.dx, -dstRect.topLeft.dy)
+        ..restore();
     }
     // Restore the canvas state
 
